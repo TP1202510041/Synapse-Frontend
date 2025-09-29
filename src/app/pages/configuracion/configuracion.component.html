@@ -1,7 +1,7 @@
 <div class="config-container">
   <div class="profile-header">
     <div class="profile-avatar">
-      {{ user?.name?.charAt(0) | uppercase }}
+      {{ user?.userName?.charAt(0) | uppercase }}
     </div>
     <h1>Configuración de Perfil</h1>
   </div>
@@ -16,7 +16,7 @@
             <i class="fas fa-user"></i>
             <span>Nombre</span>
           </div>
-          <p class="info-value">{{ user.name }}</p>
+          <p class="info-value">{{ user.userName }}</p>
         </div>
 
         <div class="info-group">

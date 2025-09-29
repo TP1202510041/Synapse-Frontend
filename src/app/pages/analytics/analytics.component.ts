@@ -240,12 +240,12 @@ export class AnalyticsComponent implements OnInit {
 
     console.log('Buscando paciente con ID:', patientId); // Debug
 
-    this.patientService.getPatientById(patientId).subscribe({
+    this.patientService.getPatient(patientId).subscribe({
       next: (patient) => {
         console.log('Paciente encontrado:', patient); // Debug
         this.patient = patient;
         // Simplificar ya que solo tenemos 'name'
-        this.patientName = patient?.name || `Paciente ${patientId}`;
+        this.patientName = patient?.patientName || `Paciente ${patientId}`;
       },
       error: (err) => {
         console.error('Error loading patient data:', err);

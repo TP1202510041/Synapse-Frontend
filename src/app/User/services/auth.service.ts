@@ -7,14 +7,25 @@ import { Router } from '@angular/router';
 export interface User {
   id: number;
   email: string;
-  name: string;
+  userName: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface RegisterData {
+  email: string;
+  userName: string;
+  password: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'http://localhost:5000/api/auth';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -42,22 +53,19 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<User> {
-    return this.http.get<User[]>(`${this.apiUrl}/users?email=${email}&password=${password}`)
+    const loginData: LoginData = { email, password };
+    return this.http.post<User>(`${this.apiUrl}/login`, loginData)
       .pipe(
-        map(users => {
-          const user = users[0];
-          if (user) {
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            this.currentUserSubject.next(user);
-            return user;
-          }
-          throw new Error('Credenciales inválidas');
+        map(user => {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          this.currentUserSubject.next(user);
+          return user;
         })
       );
   }
 
-  register(userData: { name: string; email: string; password: string }): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/users`, userData);
+  register(userData: RegisterData): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}/register`, userData);
   }
 
   logout(): void {
@@ -74,6 +82,7 @@ export class AuthService {
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
     return user.id || '';
   }
+
   updateUserProfile(user: User): Observable<User> {
     return this.http.put<User>(`${this.apiUrl}/users/${user.id}`, user).pipe(
       map(updatedUser => {

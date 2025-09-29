@@ -24,7 +24,7 @@ export class ConfiguracionComponent implements OnInit {
     this.user = this.authService.currentUserValue;
     if (this.user) {
       this.editedUser = {
-        name: this.user.name,
+        name: this.user.userName,
         email: this.user.email
       };
     }
@@ -57,7 +57,7 @@ export class ConfiguracionComponent implements OnInit {
   cancelEditing() {
     if (this.user) {
       this.editedUser = {
-        name: this.user.name,
+        name: this.user.userName,
         email: this.user.email
       };
     }
