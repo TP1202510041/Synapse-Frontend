@@ -22,8 +22,8 @@ export class PatientCardComponent {
   }
 
   goToSessions(): void {
-    this.router.navigate(['/paciente', this.patient.id, 'sesiones'], {
-      queryParams: { name: this.patient.name }
+    this.router.navigate(['/paciente', this.patient.patientId, 'sesiones'], {
+      queryParams: { name: this.patient.patientName }
     });
   }
 }

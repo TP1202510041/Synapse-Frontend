@@ -29,20 +29,25 @@
       </a>
     </nav>
 
-    <div
-      class="patient-item"
-      *ngFor="let patient of patients"
-      (click)="goToSessions(patient.id.toString(), patient.name)"
-    >
-      <span class="status blue"></span>
-      <span class="patient-name">{{ patient.name }}</span>
+    <!-- Lista de pacientes -->
+    <div class="patients-section" *ngIf="patients.length > 0">
+      <h3 *ngIf="isExpanded" class="section-title">Mis Pacientes</h3>
+      <div
+        class="patient-item"
+        *ngFor="let patient of patients"
+        (click)="goToSessions(patient.patientId, patient.patientName)"
+      >
+        <span class="status blue"></span>
+        <span class="patient-name" *ngIf="isExpanded">{{ patient.patientName }}</span>
+        <span class="patient-initial" *ngIf="!isExpanded">{{ patient.patientName.charAt(0).toUpperCase() }}</span>
+      </div>
     </div>
 
     <div class="logout-section">
-    <button class="logout-btn" (click)="cerrarSesion()">
-      <i class="fas fa-sign-out-alt"></i>
-      <span *ngIf="isExpanded">Cerrar Sesión</span>
-    </button>
+      <button class="logout-btn" (click)="cerrarSesion()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span *ngIf="isExpanded">Cerrar Sesión</span>
+      </button>
+    </div>
   </div>
-</div>
 </div>

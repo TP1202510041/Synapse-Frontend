@@ -1,13 +1,25 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 export interface User {
-  id: number;
+  id?: number;
   email: string;
   userName: string;
+  role?: string;
+}
+
+interface LoginResponse {
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    email: string;
+    userName: string;
+    role: string;
+  };
 }
 
 interface LoginData {
@@ -40,6 +52,7 @@ export class AuthService {
         this.currentUserSubject = new BehaviorSubject<User | null>(user);
       } catch {
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('token');
         this.currentUserSubject = new BehaviorSubject<User | null>(null);
       }
     } else {
@@ -54,33 +67,54 @@ export class AuthService {
 
   login(email: string, password: string): Observable<User> {
     const loginData: LoginData = { email, password };
-    return this.http.post<User>(`${this.apiUrl}/login`, loginData)
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, loginData)
       .pipe(
-        map(user => {
+        tap(response => {
+          console.log('Login response completa:', response);
+
+          // CRÍTICO: Guardar el TOKEN
+          if (response.success && response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            console.log('✅ Token guardado:', response.data.token.substring(0, 20) + '...');
+          }
+        }),
+        map(response => {
+          // Construir el objeto User desde response.data
+          const user: User = {
+            email: response.data.email,
+            userName: response.data.userName,
+            role: response.data.role
+          };
+
           localStorage.setItem('currentUser', JSON.stringify(user));
           this.currentUserSubject.next(user);
+          console.log('✅ Usuario guardado:', user);
+
           return user;
         })
       );
   }
 
-  register(userData: RegisterData): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/register`, userData);
+  register(userData: RegisterData): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/register`, userData);
   }
 
   logout(): void {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('token');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
   isAuthenticated(): boolean {
-    return this.currentUserValue !== null && localStorage.getItem('currentUser') !== null;
+    const hasUser = this.currentUserValue !== null;
+    const hasToken = !!localStorage.getItem('token');
+    return hasUser && hasToken;
   }
 
   getCurrentUserId(): string {
-    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    return user.id || '';
+    const user = this.currentUserValue;
+    return user?.id?.toString() || '';
   }
 
   updateUserProfile(user: User): Observable<User> {

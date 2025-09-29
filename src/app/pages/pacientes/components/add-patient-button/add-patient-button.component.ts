@@ -2,9 +2,8 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Patient } from '../../../../models/patient.model';
+import { Patient, CreatePatientDto } from '../../../../models/patient.model'; // ✅ Importar CreatePatientDto
 import { PatientService } from '../../../../services/patient.service';
-import { AuthService } from '../../../../User/services/auth.service';
 
 @Component({
   selector: 'app-add-patient-button',
@@ -15,7 +14,6 @@ import { AuthService } from '../../../../User/services/auth.service';
 })
 export class AddPatientButtonComponent {
   showForm = false;
-
   name = '';
   age: number | null = null;
   gender = 'Femenino';
@@ -24,7 +22,6 @@ export class AddPatientButtonComponent {
 
   constructor(
     private patientService: PatientService,
-    private authService: AuthService,
     private http: HttpClient
   ) {}
 
@@ -33,30 +30,39 @@ export class AddPatientButtonComponent {
   }
 
   submitForm(): void {
-    const userId = this.authService.getCurrentUserId();
-    const randomId = Math.floor(Math.random() * 898) + 1; // 1 to 898
+    if (!this.name || !this.age) {
+      alert('Por favor complete todos los campos');
+      return;
+    }
+
+    const randomId = Math.floor(Math.random() * 898) + 1;
 
     this.http.get<any>(`https://pokeapi.co/api/v2/pokemon/${randomId}`).subscribe({
       next: (pokemonData) => {
-        const imageUrl = pokemonData.sprites.front_default || '';
-
-        const newPatient: Omit<Patient, 'id'> = {
-          userId,
-          name: this.name,
-          age: this.age || 0,
+        // ✅ Usar CreatePatientDto en lugar de Omit<Patient, 'patient_id'>
+        const newPatient: CreatePatientDto = {
+          patientName: this.name,
+          age: this.age!,
           gender: this.gender,
-          imageUrl
+          imageUrl: pokemonData.sprites.front_default || ''
         };
 
-        this.patientService.createPatient(newPatient).subscribe(() => {
-          this.toggleForm();
-          this.patientAdded.emit();
-          this.resetForm();
+        this.patientService.createPatient(newPatient).subscribe({
+          next: (createdPatient) => {
+            console.log('Paciente creado exitosamente:', createdPatient);
+            this.toggleForm();
+            this.patientAdded.emit();
+            this.resetForm();
+          },
+          error: (err) => {
+            console.error('Error al crear el paciente:', err);
+            alert('Error al crear el paciente');
+          }
         });
       },
       error: (err) => {
         console.error('Error al obtener el Pokémon:', err);
-        alert('No se pudo obtener la imagen del Pokémon. Intenta nuevamente.');
+        alert('No se pudo obtener la imagen del Pokémon');
       }
     });
   }

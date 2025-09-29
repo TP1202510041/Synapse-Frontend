@@ -23,8 +23,8 @@ export class PatientDashboardComponent implements OnInit {
   }
 
   loadPatients(): void {
-    const userId = this.authService.getCurrentUserId();
-    this.patientService.getPatientsByUser(userId).subscribe((data) => {
+
+    this.patientService.getPatients().subscribe((data) => {
       this.patients = data;
     });
   }

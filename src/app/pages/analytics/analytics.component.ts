@@ -231,7 +231,6 @@ export class AnalyticsComponent implements OnInit {
 
   // ✅ NUEVA FUNCIÓN: Cargar datos del paciente
   loadPatientData(patientId: string): void {
-    // No convertir a número - mantener como string
     if (!patientId) {
       console.error('ID de paciente no proporcionado');
       this.patientName = 'Paciente desconocido';
@@ -240,11 +239,19 @@ export class AnalyticsComponent implements OnInit {
 
     console.log('Buscando paciente con ID:', patientId); // Debug
 
-    this.patientService.getPatient(patientId).subscribe({
+    // Convertir string a number antes de pasar al servicio
+    const patientIdNumber = Number(patientId);
+
+    if (isNaN(patientIdNumber)) {
+      console.error('ID de paciente inválido:', patientId);
+      this.patientName = 'Paciente desconocido';
+      return;
+    }
+
+    this.patientService.getPatient(patientIdNumber).subscribe({
       next: (patient) => {
         console.log('Paciente encontrado:', patient); // Debug
         this.patient = patient;
-        // Simplificar ya que solo tenemos 'name'
         this.patientName = patient?.patientName || `Paciente ${patientId}`;
       },
       error: (err) => {

@@ -1,44 +1,42 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Patient } from '../models/patient.model';
+import { Patient, CreatePatientDto, UpdatePatientDto } from '../models/patient.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
-  private apiUrl = 'http://localhost:3000/patients';
+  private apiUrl = 'http://localhost:5000/api/patients';
 
   constructor(private http: HttpClient) {}
 
-
-  getPatientsByUser(userId: string): Observable<Patient[]> {
-    return this.http.get<Patient[]>(`${this.apiUrl}?userId=${userId}`);
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    console.log('Token usado en request:', token ? token.substring(0, 20) + '...' : 'NO HAY TOKEN');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
   }
 
-
-  getPatient(id: number, userId: string): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/${id}?userId=${userId}`);
+  getPatients(): Observable<Patient[]> {
+    return this.http.get<Patient[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-
-  getPatientById(id: string): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/${id}`);
+  getPatient(id: number): Observable<Patient> {
+    return this.http.get<Patient>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
-
-  updatePatient(patient: Patient): Observable<Patient> {
-    return this.http.put<Patient>(`${this.apiUrl}/${patient.id}`, patient);
+  createPatient(patient: CreatePatientDto): Observable<Patient> {
+    return this.http.post<Patient>(this.apiUrl, patient, { headers: this.getHeaders() });
   }
 
-
-  createPatient(patient: Omit<Patient, 'id'>): Observable<Patient> {
-    return this.http.post<Patient>(this.apiUrl, patient);
+  updatePatient(id: number, patient: UpdatePatientDto): Observable<Patient> {
+    return this.http.put<Patient>(`${this.apiUrl}/${id}`, patient, { headers: this.getHeaders() });
   }
-
 
   deletePatient(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 }
-

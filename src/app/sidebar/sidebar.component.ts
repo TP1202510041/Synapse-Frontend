@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {Router, RouterLink, RouterLinkActive} from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../User/services/auth.service';
 import { PatientService } from '../services/patient.service';
 import { Patient } from '../models/patient.model';
-
 
 @Component({
   selector: 'app-sidebar',
@@ -21,17 +20,22 @@ export class SidebarComponent implements OnInit {
     private authService: AuthService,
     private patientService: PatientService,
     private router: Router,
-
   ) {}
 
   ngOnInit(): void {
-    const userId = this.authService.currentUserValue?.id;
-    if (userId) {
-      this.patientService.getPatientsByUser(userId.toString()).subscribe(p => {
-        this.patients = p;
+    this.loadPatients();
+  }
 
-      });
-    }
+  loadPatients(): void {
+    this.patientService.getPatients().subscribe({
+      next: (patients) => {
+        this.patients = patients;
+        console.log('Pacientes cargados:', this.patients);
+      },
+      error: (error) => {
+        console.error('Error al cargar pacientes:', error);
+      }
+    });
   }
 
   toggleSidebar(): void {
@@ -40,12 +44,11 @@ export class SidebarComponent implements OnInit {
 
   cerrarSesion(): void {
     this.authService.logout();
-
   }
-  goToSessions(patientId: string, name: string) {
+
+  goToSessions(patientId: number, name: string): void {
     this.router.navigate(['/paciente', patientId, 'sesiones'], {
       queryParams: { name }
     });
   }
-
 }
