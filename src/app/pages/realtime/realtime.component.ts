@@ -131,7 +131,7 @@ export class RealtimeComponent implements OnInit, OnDestroy {
    */
   async getLastRecordId(): Promise<number> {
     try {
-      const data = await this.http.get<HeartRate[]>('https://mindreliefdb.onrender.com/heartRateData').toPromise();
+      const data = await this.http.get<HeartRate[]>('https://heartrate-api.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/heartRateData').toPromise();
       if (data && data.length > 0) {
         // Encontrar el ID más alto, convirtiendo a número
         const maxId = Math.max(...data.map(record => Number(record.id) || 0));
