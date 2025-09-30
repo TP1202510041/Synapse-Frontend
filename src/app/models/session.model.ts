@@ -1,7 +1,15 @@
+// src/app/models/session.model.ts
 export interface Session {
-  id: string;
-  userId: string;
-  patientId: string;
-  date: string;
+  idSession: string;
+  sessionDate: string;
   description: string;
+  patientId: number;
+  patientName?: string;
+  estado?: string | null;
+}
+
+export interface CreateSessionDto {
+  sessionDate: string;
+  description: string;
+  patientId: number;
 }

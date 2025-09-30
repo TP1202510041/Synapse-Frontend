@@ -1,6 +1,5 @@
 <div class="session-details-container">
   <!-- Header -->
-
   <div class="header">
     <button (click)="goBack()" class="back-btn">← Volver a sesiones</button>
     <h1>📊 Análisis de Sesión</h1>
@@ -27,13 +26,12 @@
       <div class="session-details">
         <div class="detail-item">
           <span class="label">Fecha:</span>
-          <span class="value">{{ session.date }}</span>
+          <span class="value">{{ session.sessionDate }}</span>
         </div>
         <div class="detail-item">
           <span class="label">Descripción:</span>
           <span class="value">{{ session.description }}</span>
         </div>
-        <!-- ✅ CORRECCIÓN: Mostrar nombre del paciente en lugar del ID -->
         <div class="detail-item">
           <span class="label">Paciente:</span>
           <span class="value">{{ patientName }}</span>
@@ -142,7 +140,7 @@
             <h4>Mañana (6:00 - 12:00)</h4>
             <div class="time-stats">
               <span class="time-avg">{{ timeAnalysis.avgByTimeOfDay.morning }} BPM</span>
-              <small>{{ timeAnalysis.morningRecords.length }} registros</small>
+              <small>Basado en sesiones en esta franja horaria</small>
             </div>
           </div>
 
@@ -151,7 +149,7 @@
             <h4>Tarde (12:00 - 18:00)</h4>
             <div class="time-stats">
               <span class="time-avg">{{ timeAnalysis.avgByTimeOfDay.afternoon }} BPM</span>
-              <small>{{ timeAnalysis.afternoonRecords.length }} registros</small>
+              <small>Basado en sesiones en esta franja horaria</small>
             </div>
           </div>
 
@@ -160,7 +158,7 @@
             <h4>Noche (18:00 - 6:00)</h4>
             <div class="time-stats">
               <span class="time-avg">{{ timeAnalysis.avgByTimeOfDay.evening }} BPM</span>
-              <small>{{ timeAnalysis.eveningRecords.length }} registros</small>
+              <small>Basado en sesiones en esta franja horaria</small>
             </div>
           </div>
         </div>
@@ -204,33 +202,18 @@
             </div>
 
             <div class="record-actions">
-              <button class="view-details-btn"
-                      (click)="record.showDetails = !record.showDetails">
-                {{ record.showDetails ? '🔼 Ocultar detalles' : '🔽 Ver detalles' }}
-              </button>
-              <button class="delete-btn" (click)="deleteMonitoringRecord(record.id!)">
+              <!-- Nota: Los detalles individuales no están disponibles desde el backend -->
+              <button class="delete-btn" (click)="deleteMonitoringRecord(record.monitoringId || record.id!)">
                 🗑️ Eliminar
               </button>
             </div>
 
-            <!-- Detailed Records -->
-            <div *ngIf="record.showDetails" class="detailed-records">
-              <h5>📈 Registros Detallados (Hora de Perú)</h5>
-              <div class="detailed-list">
-                <div *ngFor="let hr of record.records" class="detail-record">
-                  <div class="detail-time">
-                    <!-- ✅ CORRECCIÓN: Usar la función mejorada para obtener el tiempo correcto en Perú -->
-                    <span>{{ formatTimeForRecord(hr) }}</span>
-                  </div>
-                  <div class="detail-device">
-                    <span>📱 {{ hr.deviceId }}</span>
-                  </div>
-                  <div class="detail-heart-rate">
-                    <span class="detail-avg">{{ hr.avgHeartRate }} BPM</span>
-                    <span class="detail-range">({{ hr.minHeartRate }}-{{ hr.maxHeartRate }})</span>
-                  </div>
-                </div>
-              </div>
+            <!-- Información adicional del backend -->
+            <div class="record-metadata" *ngIf="record.patientName">
+              <small>
+                👤 Paciente: {{ record.patientName }} |
+                📝 Creado: {{ record.createdAt | date:'dd/MM/yyyy HH:mm' }}
+              </small>
             </div>
           </div>
         </div>

@@ -15,15 +15,15 @@
   <!-- Card: Sesión de hoy -->
   <div *ngIf="todaySession" class="latest-session-card today-session">
     <h4>✅ Sesión programada para hoy</h4>
-    <p><strong>{{ todaySession.date }}</strong> — {{ todaySession.description }}</p>
+    <p><strong>{{ todaySession.sessionDate }}</strong> — {{ todaySession.description }}</p>
     <button (click)="startMonitoring(todaySession)" class="monitor-btn">🎯 Iniciar monitoreo</button>
   </div>
 
   <!-- Card: Última sesión registrada (solo si no es la de hoy) -->
   <div *ngIf="latestSession && latestSession !== todaySession" class="latest-session-card">
     <h4>📋 Última sesión registrada</h4>
-    <p><strong>{{ latestSession.date }}</strong> — {{ latestSession.description }}</p>
-    <small *ngIf="!isToday(latestSession.date)" class="not-today-note">
+    <p><strong>{{ latestSession.sessionDate }}</strong> — {{ latestSession.description }}</p>
+    <small *ngIf="!isToday(latestSession.sessionDate)" class="not-today-note">
       ⚠️ Esta sesión no es para hoy, por lo que no se puede monitorear
     </small>
   </div>
@@ -47,22 +47,22 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let session of sessions" [class.today-row]="isToday(session.date)">
+      <tr *ngFor="let session of sessions" [class.today-row]="isToday(session.sessionDate)">
         <td>
-          {{ session.date }}
-          <span *ngIf="isToday(session.date)" class="today-badge">HOY</span>
+          {{ session.sessionDate }}
+          <span *ngIf="isToday(session.sessionDate)" class="today-badge">HOY</span>
         </td>
         <td>{{ session.description }}</td>
         <td>
-          <span *ngIf="isToday(session.date)" class="status-badge active">✅ Disponible para monitoreo</span>
-          <span *ngIf="!isToday(session.date)" class="status-badge inactive">⏳ Programada</span>
+          <span *ngIf="isToday(session.sessionDate)" class="status-badge active">✅ Disponible para monitoreo</span>
+          <span *ngIf="!isToday(session.sessionDate)" class="status-badge inactive">⏳ Programada</span>
         </td>
         <td>
           <button (click)="viewSession(session)" class="view-btn">👁️ Ver</button>
-          <button *ngIf="isToday(session.date)"
+          <button *ngIf="isToday(session.sessionDate)"
                   (click)="startMonitoring(session)"
                   class="monitor-btn-small">🎯 Monitorear</button>
-          <button class="delete" (click)="deleteSession(session.id)">🗑️</button>
+          <button class="delete" (click)="deleteSession(session.idSession)">🗑️</button>
         </td>
       </tr>
       </tbody>
