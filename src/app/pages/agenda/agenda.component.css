@@ -1,26 +1,565 @@
-.calendar-container {
-  margin: 20px;
-  padding: 20px;
-  background: white;
+/* Contenedor Principal */
+.agenda-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  background: linear-gradient(135deg, var(--gray-50) 0%, rgba(255,255,255,0.8) 100%);
+  font-family: 'Inter', 'Poppins', sans-serif;
+}
+
+/* Header del Calendario */
+.agenda-header {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.8) 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-title h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.025em;
+}
+
+.events-summary {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  color: #6c757d;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-create-event, .btn-test-events, .btn-refresh {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: 800px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-:host ::ng-deep .fc {
+.btn-create-event {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+}
+
+.btn-create-event:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+}
+
+.btn-test-events {
+  background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+  color: #212529;
+}
+
+.btn-test-events:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e0a800 0%, #e8590c 100%);
+  transform: translateY(-1px);
+}
+
+.btn-refresh {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+}
+
+.btn-refresh:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-1px);
+}
+
+.btn-create-event:disabled, .btn-test-events:disabled, .btn-refresh:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Error Message */
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 0.75rem 1rem;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  margin: 0 2.5rem 1rem 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.error-close {
+  background: none;
+  border: none;
+  color: #721c24;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-left: auto;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
-:host ::ng-deep .fc-toolbar-title {
-  font-size: 1.5em !important;
+.loading-spinner {
+  font-size: 2rem;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
-:host ::ng-deep .fc-button {
-  background-color: #1a73e8 !important;
-  border-color: #1a73e8 !important;
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-:host ::ng-deep .fc-button-active {
-  background-color: #174ea6 !important;
-  border-color: #174ea6 !important;
+/* Calendario Wrapper */
+.calendar-wrapper {
+  margin: 0 2.5rem 2rem 2.5rem;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: opacity 0.3s ease;
+}
+
+.calendar-wrapper.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Estilos para FullCalendar */
+.calendar-wrapper ::ng-deep .fc {
+  font-family: 'Inter', 'Poppins', sans-serif;
+}
+
+.calendar-wrapper ::ng-deep .fc-toolbar {
+  margin-bottom: 1.5rem;
+}
+
+.calendar-wrapper ::ng-deep .fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.calendar-wrapper ::ng-deep .fc-button {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.calendar-wrapper ::ng-deep .fc-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-1px);
+}
+
+.calendar-wrapper ::ng-deep .fc-button:disabled {
+  background: #6c757d;
+  opacity: 0.6;
+}
+
+.calendar-wrapper ::ng-deep .fc-event {
+  border-radius: 6px;
+  border: none;
+  padding: 2px 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.calendar-wrapper ::ng-deep .fc-event:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.calendar-wrapper ::ng-deep .fc-daygrid-event {
+  margin-bottom: 2px;
+}
+
+.calendar-wrapper ::ng-deep .fc-timegrid-event {
+  border-radius: 4px;
+}
+
+/* Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid #e9ecef;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.btn-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-control:disabled {
+  background-color: #e9ecef;
+  opacity: 0.6;
+}
+
+.form-control.invalid {
+  border-color: #dc3545;
+}
+
+.validation-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.color-input {
+  width: 50px;
+  height: 40px;
+  border: 2px solid #ced4da;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.color-preview {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.auto-fields-info {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #1565c0;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border-top: 2px solid #e9ecef;
+  background: #f8f9fa;
+  border-radius: 0 0 16px 16px;
+}
+
+.btn-cancel, .btn-save {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-1px);
+}
+
+.btn-save:disabled, .btn-cancel:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modal-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  z-index: 10;
+}
+
+/* Instrucciones de Uso */
+.usage-instructions {
+  margin: 2rem 2.5rem;
+}
+
+.instructions-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px dashed #dee2e6;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+}
+
+.instructions-card h4 {
+  margin: 0 0 1.5rem 0;
+  color: #495057;
+  font-size: 1.25rem;
+}
+
+.instructions-list {
+  text-align: left;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+  padding-left: 1rem;
+}
+
+.instructions-list li {
+  margin-bottom: 0.75rem;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.instructions-actions {
+  margin-top: 1.5rem;
+}
+
+.btn-demo {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-demo:hover:not(:disabled) {
+  background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .agenda-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.5rem;
+  }
+
+  .header-actions {
+    justify-content: center;
+  }
+
+  .calendar-wrapper {
+    margin: 0 1rem 1rem 1rem;
+    padding: 1rem;
+  }
+
+  .error-message {
+    margin: 0 1rem 1rem 1rem;
+  }
+
+  .usage-instructions {
+    margin: 1rem;
+  }
+
+  .instructions-card {
+    padding: 1.5rem;
+  }
+
+  .modal-container {
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .btn-save, .btn-cancel {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .agenda-header {
+    padding: 1rem;
+  }
+
+  .header-title h2 {
+    font-size: 1.5rem;
+  }
+
+  .events-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .header-actions {
+    flex-direction: column;
+  }
+
+  .btn-create-event, .btn-test-events, .btn-refresh {
+    width: 100%;
+    justify-content: center;
+  }
 }

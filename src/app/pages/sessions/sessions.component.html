@@ -1,6 +1,47 @@
 <div class="sessions-container">
-  <h2>Sesiones de {{ patientName }}</h2>
-  <p><strong>Hora actual (Perú):</strong> {{ formatDateInSpanish(now) }} — {{ formatTimeInSpanish(now) }}</p>
+  <div class="sessions-header">
+    <h2>Sesiones de {{ patientName }}</h2>
+    <p><strong>Hora actual (Perú):</strong> {{ formatDateInSpanish(now) }} — {{ formatTimeInSpanish(now) }}</p>
+  </div>
+
+  <!-- NUEVAS TABS DE NAVEGACIÓN -->
+  <div class="session-tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'sessions'"
+      (click)="setActiveTab('sessions')">
+      📅 Sesiones
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'observations'"
+      (click)="setActiveTab('observations')">
+      📝 Observaciones de Sesión
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'monitoring'"
+      (click)="setActiveTab('monitoring')">
+      🫀 Monitoreos y Observaciones
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'analytics'"
+      (click)="setActiveTab('analytics')">
+      📊 Analytics
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'export'"
+      (click)="setActiveTab('export')">
+      📄 Exportar PDF
+    </button>
+  </div>
+  
+  <div class="sessions-content">
+
+  <!-- TAB: SESIONES (contenido original) -->
+  <div *ngIf="activeTab === 'sessions'" class="tab-content">
 
   <!-- Agendar nueva sesión -->
   <div class="session-form">
@@ -47,10 +88,14 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let session of sessions" [class.today-row]="isToday(session.sessionDate)">
+      <tr *ngFor="let session of sessions" 
+          [class.today-row]="isToday(session.sessionDate)"
+          [class.selected]="selectedSession?.idSession === session.idSession"
+          (click)="selectSession(session)">
         <td>
           {{ session.sessionDate }}
           <span *ngIf="isToday(session.sessionDate)" class="today-badge">HOY</span>
+          <span *ngIf="selectedSession?.idSession === session.idSession" class="selected-badge">SELECCIONADA</span>
         </td>
         <td>{{ session.description }}</td>
         <td>
@@ -58,14 +103,216 @@
           <span *ngIf="!isToday(session.sessionDate)" class="status-badge inactive">⏳ Programada</span>
         </td>
         <td>
-          <button (click)="viewSession(session)" class="view-btn">👁️ Ver</button>
+          <button (click)="viewSession(session); $event.stopPropagation()" class="view-btn">👁️ Ver</button>
           <button *ngIf="isToday(session.sessionDate)"
-                  (click)="startMonitoring(session)"
+                  (click)="startMonitoring(session); $event.stopPropagation()"
                   class="monitor-btn-small">🎯 Monitorear</button>
-          <button class="delete" (click)="deleteSession(session.idSession)">🗑️</button>
+          <button (click)="openEditModal(session); $event.stopPropagation()" 
+                  class="edit-btn" 
+                  title="Editar sesión">✏️ Editar</button>
+          <button (click)="setActiveTab('observations'); $event.stopPropagation()" 
+                  class="obs-btn">📝 Observaciones</button>
+          <button (click)="setActiveTab('monitoring'); $event.stopPropagation()" 
+                  class="monitoring-btn">🫀 Monitoreos</button>
+          <button class="delete" (click)="deleteSession(session.idSession); $event.stopPropagation()">🗑️</button>
         </td>
       </tr>
       </tbody>
     </table>
+  </div>
+  </div>
+
+  <!-- TAB: OBSERVACIONES CLÍNICAS DE SESIÓN -->
+  <div *ngIf="activeTab === 'observations'" class="tab-content">
+    <div class="tab-header">
+      <h3>📝 Observaciones Clínicas de Sesión</h3>
+      <div *ngIf="selectedSession" class="selected-session-info">
+        <strong>Sesión seleccionada:</strong> {{ selectedSession.sessionDate }} - {{ selectedSession.description }}
+      </div>
+      <p class="tab-description">
+        💡 Estas observaciones están asociadas a toda la sesión VR, no a monitoreos específicos.
+      </p>
+    </div>
+    
+    <div *ngIf="selectedSession">
+      <app-real-observations
+        [sessionId]="selectedSession.idSession"
+        [patientId]="patientId"
+        [sessionDate]="selectedSession.sessionDate">
+      </app-real-observations>
+    </div>
+    
+    <div *ngIf="!selectedSession" class="no-session-selected">
+      <p>⚠️ Selecciona una sesión desde la pestaña "Sesiones" para ver las observaciones.</p>
+      <button (click)="setActiveTab('sessions')" class="btn-primary">Ir a Sesiones</button>
+    </div>
+  </div>
+
+  <!-- TAB: MONITOREOS Y OBSERVACIONES DE MONITOREO -->
+  <div *ngIf="activeTab === 'monitoring'" class="tab-content">
+    <div class="tab-header">
+      <h3>🫀 Monitoreos y Observaciones de Monitoreo</h3>
+      <div *ngIf="selectedSession" class="selected-session-info">
+        <strong>Sesión seleccionada:</strong> {{ selectedSession.sessionDate }} - {{ selectedSession.description }}
+      </div>
+      <p class="tab-description">
+        💡 Aquí puedes ver todos los registros de monitoreo cardíaco de esta sesión y agregar observaciones específicas para cada monitoreo individual.
+      </p>
+    </div>
+    
+    <div *ngIf="selectedSession">
+      <app-monitoring-records-view
+        [sessionId]="selectedSession.idSession"
+        [patientId]="patientId">
+      </app-monitoring-records-view>
+    </div>
+    
+    <div *ngIf="!selectedSession" class="no-session-selected">
+      <p>⚠️ Selecciona una sesión desde la pestaña "Sesiones" para ver los monitoreos.</p>
+      <button (click)="setActiveTab('sessions')" class="btn-primary">Ir a Sesiones</button>
+    </div>
+  </div>
+
+  <!-- TAB: ANALYTICS -->
+  <div *ngIf="activeTab === 'analytics'" class="tab-content">
+    <div class="tab-header">
+      <h3>📊 Analytics del Paciente</h3>
+      <p>Análisis de progreso y métricas terapéuticas</p>
+    </div>
+    
+    <app-simple-analytics
+      [patientId]="patientId">
+    </app-simple-analytics>
+  </div>
+
+  <!-- TAB: EXPORTAR PDF -->
+  <div *ngIf="activeTab === 'export'" class="tab-content">
+    <div class="tab-header">
+      <h3>📄 Exportar Reporte PDF</h3>
+      <p>Genera reportes completos con gráficos y análisis</p>
+    </div>
+    
+    <app-simple-export
+      [patientId]="patientId"
+      [patientName]="patientName">
+    </app-simple-export>
+  </div>
+
+  </div>
+
+  <!-- ✅ MODAL DE EDICIÓN DE SESIÓN -->
+  <div class="modal-backdrop" *ngIf="showEditModal" (click)="closeEditModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h3>✏️ Editar Sesión</h3>
+        <button class="btn-close" (click)="closeEditModal()" title="Cerrar">✕</button>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="editError">
+        <span class="error-icon">❌</span>
+        {{ editError }}
+        <button class="error-close" (click)="clearEditError()">×</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <form (ngSubmit)="saveSessionChanges()" #editFormRef="ngForm">
+          
+          <!-- Información de la sesión actual -->
+          <div class="session-info" *ngIf="editingSession">
+            <h4>📋 Sesión Actual:</h4>
+            <div class="current-session-data">
+              <div class="info-item">
+                <span class="info-label">📅 Fecha actual:</span>
+                <span class="info-value">{{ editingSession.sessionDate }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">📝 Descripción actual:</span>
+                <span class="info-value">{{ editingSession.description }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">👤 Paciente:</span>
+                <span class="info-value">{{ patientName }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fecha de la Sesión -->
+          <div class="form-group">
+            <label for="editSessionDate">📅 Nueva Fecha de la Sesión *</label>
+            <input 
+              type="date" 
+              id="editSessionDate"
+              [(ngModel)]="editForm.sessionDate"
+              name="sessionDate"
+              class="form-control"
+              required
+              [disabled]="isEditLoading">
+          </div>
+
+          <!-- Descripción de la Sesión -->
+          <div class="form-group">
+            <label for="editDescription">📝 Nueva Descripción *</label>
+            <textarea 
+              id="editDescription"
+              [(ngModel)]="editForm.description"
+              name="description"
+              class="form-control"
+              rows="3"
+              placeholder="Describe la sesión de terapia VR..."
+              minlength="3"
+              maxlength="255"
+              required
+              [disabled]="isEditLoading">
+            </textarea>
+            <div class="char-counter">
+              <small>{{ editForm.description.length }}/255 caracteres</small>
+            </div>
+          </div>
+
+          <!-- Información adicional -->
+          <div class="edit-info">
+            <div class="info-item">
+              <span class="info-icon">💡</span>
+              <span class="info-text">Los cambios se aplicarán inmediatamente</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">⚠️</span>
+              <span class="info-text">Solo puedes editar sesiones que hayas creado</span>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn-cancel" 
+          (click)="closeEditModal()"
+          [disabled]="isEditLoading">
+          Cancelar
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn-save" 
+          (click)="saveSessionChanges()"
+          [disabled]="isEditLoading || !editForm.sessionDate.trim() || !editForm.description.trim() || editForm.description.trim().length < 3">
+          <span class="btn-icon">{{ isEditLoading ? '⏳' : '💾' }}</span>
+          {{ isEditLoading ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
+      </div>
+
+      <!-- Loading Overlay del Modal -->
+      <div class="modal-loading" *ngIf="isEditLoading">
+        <div class="loading-spinner">🔄</div>
+        <p>Guardando cambios...</p>
+      </div>
+    </div>
   </div>
 </div>

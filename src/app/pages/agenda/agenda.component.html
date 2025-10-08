@@ -1,3 +1,216 @@
-<div class="calendar-container">
-  <full-calendar [options]="calendarOptions"></full-calendar>
+<div class="agenda-container">
+  <!-- Header del Calendario -->
+  <div class="agenda-header">
+    <div class="header-title">
+      <h2>📅 Mi Calendario de Eventos</h2>
+      <div class="events-summary">
+        <span class="summary-item">
+          <strong>{{ getTotalEvents() }}</strong> eventos totales
+        </span>
+        <span class="summary-item">
+          <strong>{{ getEventsToday() }}</strong> eventos hoy
+        </span>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <button 
+        class="btn-create-event" 
+        (click)="showEventModal = true; resetForm()"
+        [disabled]="isLoading">
+        <span class="btn-icon">➕</span>
+        Nuevo Evento
+      </button>
+      
+      <button 
+        class="btn-test-events" 
+        (click)="createTestEvents()"
+        [disabled]="isLoading"
+        title="Crear eventos de prueba">
+        <span class="btn-icon">🧪</span>
+        Eventos de Prueba
+      </button>
+      
+      <button 
+        class="btn-refresh" 
+        (click)="loadEvents()"
+        [disabled]="isLoading">
+        <span class="btn-icon">{{ isLoading ? '🔄' : '🔄' }}</span>
+        {{ isLoading ? 'Cargando...' : 'Actualizar' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Mensaje de Error -->
+  <div class="error-message" *ngIf="error">
+    <span class="error-icon">❌</span>
+    {{ error }}
+    <button class="error-close" (click)="clearError()">×</button>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-spinner">🔄</div>
+    <p>Cargando calendario...</p>
+  </div>
+
+  <!-- Calendario Principal -->
+  <div class="calendar-wrapper" [class.loading]="isLoading">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+  </div>
+
+  <!-- Modal para Crear/Editar Evento -->
+  <div class="modal-backdrop" *ngIf="showEventModal" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h3>{{ isEditMode ? '✏️ Editar Evento' : '➕ Crear Nuevo Evento' }}</h3>
+        <button class="btn-close" (click)="closeModal()" title="Cerrar">✕</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <form (ngSubmit)="isEditMode ? updateEvent() : createEvent()" #eventFormRef="ngForm">
+          
+          <!-- Título del Evento -->
+          <div class="form-group">
+            <label for="eventTitle">Título del Evento *</label>
+            <input 
+              type="text" 
+              id="eventTitle"
+              [(ngModel)]="eventForm.title"
+              name="title"
+              class="form-control"
+              [class.invalid]="!formValidation.title.valid"
+              placeholder="Ej: Cita con paciente Juan"
+              maxlength="255"
+              required
+              [disabled]="isLoading">
+            <div class="validation-message" *ngIf="!formValidation.title.valid">
+              {{ formValidation.title.message }}
+            </div>
+          </div>
+
+          <!-- Fecha y Hora de Inicio -->
+          <div class="form-group">
+            <label for="eventStart">Fecha y Hora de Inicio *</label>
+            <input 
+              type="datetime-local" 
+              id="eventStart"
+              [(ngModel)]="eventForm.start"
+              name="start"
+              class="form-control"
+              [class.invalid]="!formValidation.dates.valid"
+              required
+              [disabled]="isLoading">
+          </div>
+
+          <!-- Fecha y Hora de Fin -->
+          <div class="form-group">
+            <label for="eventEnd">Fecha y Hora de Fin *</label>
+            <input 
+              type="datetime-local" 
+              id="eventEnd"
+              [(ngModel)]="eventForm.end"
+              name="end"
+              class="form-control"
+              [class.invalid]="!formValidation.dates.valid"
+              required
+              [disabled]="isLoading">
+            <div class="validation-message" *ngIf="!formValidation.dates.valid">
+              {{ formValidation.dates.message }}
+            </div>
+          </div>
+
+          <!-- Descripción (Solo en modo edición) -->
+          <div class="form-group" *ngIf="isEditMode">
+            <label for="eventDescription">Descripción (Opcional)</label>
+            <textarea 
+              id="eventDescription"
+              [(ngModel)]="eventForm.description"
+              name="description"
+              class="form-control"
+              rows="3"
+              placeholder="Descripción adicional del evento..."
+              maxlength="1000"
+              [disabled]="isLoading">
+            </textarea>
+          </div>
+
+          <!-- Color (Solo en modo edición) -->
+          <div class="form-group" *ngIf="isEditMode">
+            <label for="eventColor">Color del Evento</label>
+            <div class="color-picker">
+              <input 
+                type="color" 
+                id="eventColor"
+                [(ngModel)]="eventForm.color"
+                name="color"
+                class="color-input"
+                [disabled]="isLoading">
+              <span class="color-preview" [style.background-color]="eventForm.color"></span>
+            </div>
+          </div>
+
+          <!-- Información sobre campos automáticos -->
+          <div class="auto-fields-info" *ngIf="!isEditMode">
+            <div class="info-item">
+              <span class="info-icon">💡</span>
+              <span class="info-text">La descripción y color se asignarán automáticamente</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">👤</span>
+              <span class="info-text">El evento se asociará automáticamente a tu cuenta</span>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn-cancel" 
+          (click)="closeModal()"
+          [disabled]="isLoading">
+          Cancelar
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn-save" 
+          (click)="isEditMode ? updateEvent() : createEvent()"
+          [disabled]="isLoading || !eventForm.title.trim() || !eventForm.start || !eventForm.end">
+          <span class="btn-icon">{{ isLoading ? '⏳' : (isEditMode ? '💾' : '➕') }}</span>
+          {{ isLoading ? 'Guardando...' : (isEditMode ? 'Actualizar Evento' : 'Crear Evento') }}
+        </button>
+      </div>
+
+      <!-- Loading Overlay del Modal -->
+      <div class="modal-loading" *ngIf="isLoading">
+        <div class="loading-spinner">🔄</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instrucciones de Uso -->
+  <div class="usage-instructions" *ngIf="getTotalEvents() === 0 && !isLoading">
+    <div class="instructions-card">
+      <h4>📋 Cómo usar el calendario:</h4>
+      <ul class="instructions-list">
+        <li><strong>Crear evento:</strong> Haz clic en "Nuevo Evento" o selecciona una fecha en el calendario</li>
+        <li><strong>Editar evento:</strong> Haz clic en un evento existente y selecciona "Editar"</li>
+        <li><strong>Mover evento:</strong> Arrastra y suelta el evento a una nueva fecha/hora</li>
+        <li><strong>Cambiar duración:</strong> Arrastra los bordes del evento para redimensionar</li>
+        <li><strong>Eliminar evento:</strong> Haz clic en un evento y selecciona "Eliminar"</li>
+      </ul>
+      <div class="instructions-actions">
+        <button class="btn-demo" (click)="createTestEvents()" [disabled]="isLoading">
+          🧪 Crear Eventos de Demostración
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

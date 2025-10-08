@@ -46,6 +46,15 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/analytics/analytics.component').then(m => m.AnalyticsComponent)
   },
   {
+    path: 'test-features',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./components/test-new-features/test-new-features-simple.component').then(m => m.TestNewFeaturesSimpleComponent)
+  },
+  {
+    path: 'diagnostic',
+    loadComponent: () => import('./components/diagnostic/diagnostic.component').then(m => m.DiagnosticComponent)
+  },
+  {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'

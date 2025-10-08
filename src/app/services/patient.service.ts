@@ -7,7 +7,7 @@ import { Patient, CreatePatientDto, UpdatePatientDto } from '../models/patient.m
   providedIn: 'root'
 })
 export class PatientService {
-  private apiUrl = 'http://localhost:5000/api/patients';
+  private apiUrl = 'https://synapse-backend-dkgtgzdyc0e2engq.canadacentral-01.azurewebsites.net/api/patients';
 
   constructor(private http: HttpClient) {}
 

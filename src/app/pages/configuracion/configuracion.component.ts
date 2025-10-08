@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService, User } from '../../User/services/auth.service';
+import { AuthService } from '../../User/services/auth.service';
+import { User } from '../../models/auth.model';
 
 @Component({
   selector: 'app-configuracion',
