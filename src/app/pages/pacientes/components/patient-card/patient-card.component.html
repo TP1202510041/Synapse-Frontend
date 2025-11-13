@@ -13,8 +13,8 @@
       <!-- Opciones desplegables -->
       <div class="menu" *ngIf="showOptions">
         <ul>
-          <li>Editar</li>
-          <li>Eliminar</li>
+          <li (click)="editPatient()">✏️ Editar</li>
+          <li (click)="deletePatient()" class="delete-option">🗑️ Eliminar</li>
         </ul>
       </div>
     </div>

@@ -51,10 +51,11 @@ export class AddPatientButtonComponent {
         
         this.patientService.createPatient(newPatient).subscribe({
           next: (createdPatient) => {
-            console.log('Paciente creado exitosamente:', createdPatient);
+            console.log('✅ Paciente creado exitosamente:', createdPatient);
             this.toggleForm();
-            this.patientAdded.emit();
             this.resetForm();
+            console.log('📢 Emitiendo evento patientAdded...');
+            this.patientAdded.emit();
           },
           error: (err) => {
             console.error('Error completo al crear el paciente:', err);

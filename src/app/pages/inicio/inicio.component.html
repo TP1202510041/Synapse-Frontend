@@ -18,53 +18,30 @@
       </a>
     </div>
 
-    <!-- NUEVAS FUNCIONALIDADES -->
-    <div class="new-features-section">
-      <h2>🚀 Nuevas Funcionalidades</h2>
-      <p class="section-subtitle">Descubre las últimas herramientas agregadas a Synapse VR</p>
-      
-      <div class="new-feature-boxes">
-        <a class="new-box" routerLink="/test-features">
-          <div class="new-badge">NUEVO</div>
-          <h3>🧪 Prueba Funcionalidades</h3>
-          <p>Explora y prueba todas las nuevas características del sistema.</p>
-          <div class="feature-list">
-            <span>• Observaciones clínicas</span>
-            <span>• Analytics avanzados</span>
-            <span>• Exportación PDF</span>
-          </div>
-        </a>
-        
-        <a class="new-box" routerLink="/diagnostic">
-          <h3>🔍 Diagnóstico Sistema</h3>
-          <p>Verifica el estado de conexión y funcionamiento del sistema.</p>
-          <div class="feature-list">
-            <span>• Test de conectividad</span>
-            <span>• Estado de servicios</span>
-            <span>• Verificación backend</span>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- ESTADÍSTICAS RÁPIDAS -->
+    <!-- ESTADÍSTICAS DEL USUARIO -->
     <div class="quick-stats">
-      <h2>📊 Resumen Rápido</h2>
+      <h2>📊 Tu Resumen</h2>
       <div class="stats-grid">
         <div class="stat-card">
+          <div class="stat-icon">👤</div>
+          <div class="stat-info">
+            <div class="stat-label">Usuario Activo</div>
+            <div class="stat-value">{{ userName }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
           <div class="stat-icon">👥</div>
-          <div class="stat-number">{{ totalPatients || 0 }}</div>
-          <div class="stat-label">Pacientes Activos</div>
+          <div class="stat-info">
+            <div class="stat-label">Tus Pacientes</div>
+            <div class="stat-number">{{ totalPatients }}</div>
+          </div>
         </div>
         <div class="stat-card">
           <div class="stat-icon">📅</div>
-          <div class="stat-number">{{ totalSessions || 0 }}</div>
-          <div class="stat-label">Sesiones Este Mes</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🆕</div>
-          <div class="stat-number">5</div>
-          <div class="stat-label">Nuevas Funcionalidades</div>
+          <div class="stat-info">
+            <div class="stat-label">Sesiones Totales</div>
+            <div class="stat-number">{{ totalSessions }}</div>
+          </div>
         </div>
       </div>
     </div>

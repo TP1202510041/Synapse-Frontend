@@ -28,7 +28,7 @@ import { AuthService } from './User/services/auth.service';
     .main-content {
       flex: 1;
       margin-left: 250px;
-      padding: 24px;
+      padding:24px;
       transition: all var(--transition-normal);
       min-height: 100vh;
       background: linear-gradient(135deg, var(--gray-50) 0%, rgba(255,255,255,0.8) 100%);
@@ -62,7 +62,6 @@ import { AuthService } from './User/services/auth.service';
     @media (min-width: 1440px) {
       .main-content {
         margin-left: 280px;
-        padding: 32px;
       }
     }
   `]

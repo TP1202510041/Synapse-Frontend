@@ -9,6 +9,7 @@ import { RealObservationsComponent } from '../../components/real-observations/re
 import { SimpleAnalyticsComponent } from '../../components/simple-analytics/simple-analytics.component';
 import { SimpleExportComponent } from '../../components/simple-export/simple-export.component';
 import { MonitoringRecordsViewComponent } from '../../components/monitoring-records-view/monitoring-records-view.component';
+import { SessionComparisonComponent } from '../../components/session-comparison/session-comparison.component';
 
 @Component({
   selector: 'app-sessions',
@@ -19,7 +20,8 @@ import { MonitoringRecordsViewComponent } from '../../components/monitoring-reco
     RealObservationsComponent,
     SimpleAnalyticsComponent,
     SimpleExportComponent,
-    MonitoringRecordsViewComponent
+    MonitoringRecordsViewComponent,
+    SessionComparisonComponent
   ],
   templateUrl: './sessions.component.html',
   styleUrls: ['./sessions.component.css']
@@ -40,7 +42,7 @@ export class SessionsComponent implements OnInit {
   showObservations = false;
   showAnalytics = false;
   showExport = false;
-  activeTab: 'sessions' | 'observations' | 'monitoring' | 'analytics' | 'export' = 'sessions';
+  activeTab: 'sessions' | 'observations' | 'monitoring' | 'analytics' | 'export' | 'comparison' = 'sessions';
 
   // ✅ NUEVAS PROPIEDADES PARA EDICIÓN DE SESIONES
   showEditModal = false;
@@ -206,7 +208,7 @@ export class SessionsComponent implements OnInit {
     console.log('Sesión seleccionada:', session);
   }
 
-  setActiveTab(tab: 'sessions' | 'observations' | 'monitoring' | 'analytics' | 'export'): void {
+  setActiveTab(tab: 'sessions' | 'observations' | 'monitoring' | 'analytics' | 'export' | 'comparison'): void {
     this.activeTab = tab;
     
     // Si seleccionamos observaciones, monitoring, analytics o export, necesitamos una sesión seleccionada

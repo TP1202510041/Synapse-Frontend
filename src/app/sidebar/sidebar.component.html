@@ -1,7 +1,7 @@
 <div class="sidebar" [class.collapsed]="!isExpanded">
   <div class="sidebar-header">
     <div class="logo-container">
-      <img src="assets/images/logo.png" alt="Synapse VR Logo">
+      <img src="Synapselogo.png" alt="Synapse VR Logo">
       <h2 *ngIf="isExpanded">Synapse VR</h2>
     </div>
     <button class="toggle-btn" (click)="toggleSidebar()">
@@ -26,22 +26,6 @@
       <a routerLink="/configuracion" routerLinkActive="active" class="nav-item">
         <i class="fas fa-cog"></i>
         <span *ngIf="isExpanded">Configuración</span>
-      </a>
-      
-      <!-- NUEVAS FUNCIONALIDADES -->
-      <div class="nav-divider" *ngIf="isExpanded">
-        <span>Nuevas Funcionalidades</span>
-      </div>
-      
-      <a routerLink="/test-features" routerLinkActive="active" class="nav-item new-feature">
-        <i class="fas fa-flask"></i>
-        <span *ngIf="isExpanded">Prueba Funcionalidades</span>
-        <span class="badge" *ngIf="isExpanded">NUEVO</span>
-      </a>
-      
-      <a routerLink="/diagnostic" routerLinkActive="active" class="nav-item">
-        <i class="fas fa-stethoscope"></i>
-        <span *ngIf="isExpanded">Diagnóstico Sistema</span>
       </a>
     </nav>
 

@@ -36,6 +36,12 @@
       (click)="setActiveTab('export')">
       📄 Exportar PDF
     </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'comparison'"
+      (click)="setActiveTab('comparison')">
+      🔄 Comparar Sesiones
+    </button>
   </div>
   
   <div class="sessions-content">
@@ -316,3 +322,15 @@
     </div>
   </div>
 </div>
+
+  <!-- TAB: COMPARAR SESIONES -->
+  <div *ngIf="activeTab === 'comparison'" class="tab-content">
+    <div class="tab-header">
+      <h3>🔄 Comparar Sesiones</h3>
+    </div>
+
+    <app-session-comparison
+      [sessions]="sessions"
+      [patientId]="patientId">
+    </app-session-comparison>
+  </div>

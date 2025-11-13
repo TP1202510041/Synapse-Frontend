@@ -165,6 +165,15 @@
   transform: translateX(2px);
 }
 
+.menu li.delete-option {
+  color: var(--error);
+}
+
+.menu li.delete-option:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+  color: var(--error);
+}
+
 .meta {
   margin: 6px 0;
   color: var(--gray-600);

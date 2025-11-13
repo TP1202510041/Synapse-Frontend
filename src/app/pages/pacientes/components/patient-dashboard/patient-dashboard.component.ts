@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Patient } from '../../../../models/patient.model';
 import { PatientService } from '../../../../services/patient.service';
 import { AuthService } from '../../../../User/services/auth.service';
@@ -14,7 +15,8 @@ import { AddPatientButtonComponent } from '../add-patient-button/add-patient-but
   selector: 'app-patient-dashboard-main',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    FormsModule,
     PatientCardComponent, 
     AddPatientButtonComponent
     // ClinicalObservationsComponent,
@@ -26,6 +28,8 @@ import { AddPatientButtonComponent } from '../add-patient-button/add-patient-but
 })
 export class PatientDashboardComponent implements OnInit {
   patients: Patient[] = [];
+  filteredPatients: Patient[] = [];
+  searchTerm: string = '';
   selectedPatient: Patient | null = null;
   selectedSessionId: string | null = null;
   showAnalytics = false;
@@ -43,7 +47,31 @@ export class PatientDashboardComponent implements OnInit {
   loadPatients(): void {
     this.patientService.getPatients().subscribe((data) => {
       this.patients = data;
+      this.filteredPatients = data;
+      console.log('✅ Pacientes cargados:', data.length);
     });
+  }
+
+  filterPatients(): void {
+    if (!this.searchTerm.trim()) {
+      this.filteredPatients = this.patients;
+    } else {
+      const term = this.searchTerm.toLowerCase().trim();
+      this.filteredPatients = this.patients.filter(patient =>
+        patient.patientName.toLowerCase().includes(term)
+      );
+      console.log(`🔍 Filtrado: ${this.filteredPatients.length} de ${this.patients.length} pacientes`);
+    }
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filteredPatients = this.patients;
+  }
+
+  onPatientAdded(): void {
+    console.log('🔄 Paciente agregado, recargando lista...');
+    this.loadPatients();
   }
 
   onPatientSelected(patient: Patient): void {
@@ -51,6 +79,26 @@ export class PatientDashboardComponent implements OnInit {
     this.selectedSessionId = null;
     this.showAnalytics = false;
     this.showExport = false;
+  }
+
+  onEditPatient(patient: Patient): void {
+    console.log('✏️ Editando paciente:', patient);
+    // TODO: Implementar modal o navegación para editar paciente
+    alert(`Funcionalidad de edición en desarrollo.\nPaciente: ${patient.patientName}`);
+  }
+
+  onDeletePatient(patientId: number): void {
+    console.log('🗑️ Eliminando paciente ID:', patientId);
+    this.patientService.deletePatient(patientId).subscribe({
+      next: () => {
+        console.log('✅ Paciente eliminado exitosamente');
+        this.loadPatients();
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar paciente:', error);
+        alert('Error al eliminar el paciente. Por favor, intenta de nuevo.');
+      }
+    });
   }
 
   onSessionSelected(sessionId: string): void {

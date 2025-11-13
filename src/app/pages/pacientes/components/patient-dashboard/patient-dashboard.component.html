@@ -1,15 +1,57 @@
 <!-- Encabezado principal -->
 <div class="main-header">
   <h2>Pacientes</h2>
-  <app-add-patient-button></app-add-patient-button>
+  <app-add-patient-button (patientAdded)="onPatientAdded()"></app-add-patient-button>
+</div>
+
+<!-- Barra de búsqueda -->
+<div class="search-container">
+  <div class="search-box">
+    <i class="fas fa-search search-icon"></i>
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="filterPatients()"
+      placeholder="Buscar paciente por nombre..."
+      class="search-input"
+    >
+    <button
+      *ngIf="searchTerm"
+      (click)="clearSearch()"
+      class="clear-btn"
+      title="Limpiar búsqueda"
+    >
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  <div class="search-results" *ngIf="searchTerm">
+    <span>{{filteredPatients.length}} resultado(s) encontrado(s)</span>
+  </div>
 </div>
 
 <!-- Contenedor gris de tarjetas -->
 <div class="home-container">
-  <div class="card-grid">
+  <div class="card-grid" *ngIf="filteredPatients.length > 0">
     <app-patient-card
-      *ngFor="let patient of patients"
+      *ngFor="let patient of filteredPatients"
       [patient]="patient"
+      (onEdit)="onEditPatient($event)"
+      (onDelete)="onDeletePatient($event)"
     ></app-patient-card>
+  </div>
+  
+  <!-- Mensaje cuando no hay resultados -->
+  <div class="no-results" *ngIf="filteredPatients.length === 0 && searchTerm">
+    <i class="fas fa-search"></i>
+    <h3>No se encontraron pacientes</h3>
+    <p>No hay pacientes que coincidan con "{{searchTerm}}"</p>
+    <button (click)="clearSearch()" class="btn-clear">Limpiar búsqueda</button>
+  </div>
+
+  <!-- Mensaje cuando no hay pacientes -->
+  <div class="no-results" *ngIf="patients.length === 0 && !searchTerm">
+    <i class="fas fa-user-plus"></i>
+    <h3>No hay pacientes registrados</h3>
+    <p>Comienza agregando tu primer paciente</p>
   </div>
 </div>
