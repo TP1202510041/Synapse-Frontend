@@ -3,12 +3,17 @@
     <h2>Bienvenido de vuelta</h2>
     <p class="subtitle">Por favor ingresa tus credenciales</p>
 
+    <div class="warning-message" *ngIf="warningMessage">
+      <i class="fas fa-exclamation-triangle"></i>
+      {{warningMessage}}
+    </div>
+
     <div class="error-message" *ngIf="error">
       <i class="fas fa-exclamation-circle"></i>
       {{error}}
     </div>
 
-    <form (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" [class.loading]="isLoading">
       <div class="form-group">
         <label for="email">
           <i class="fas fa-envelope"></i> Correo electrónico
@@ -42,13 +47,14 @@
         </div>
       </div>
 
-      <button type="submit" class="submit-btn">
-        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+      <button type="submit" class="submit-btn" [disabled]="isLoading">
+        <i [class]="isLoading ? 'fas fa-spinner fa-spin' : 'fas fa-sign-in-alt'"></i> 
+        {{ isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión' }}
       </button>
     </form>
 
     <div class="additional-options">
-      <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+      <a routerLink="/forgot-password" class="forgot-password">¿Olvidaste tu contraseña?</a>
       <br>
       <a routerLink="/register" class="switch-auth">¿No tienes una cuenta? Regístrate</a>
     </div>

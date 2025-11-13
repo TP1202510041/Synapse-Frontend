@@ -66,7 +66,7 @@ export interface CreateMonitoringDto {
   providedIn: 'root'
 })
 export class MonitoringService {
-  private apiUrl = 'https://synapse-backend-dkgtgzdyc0e2engq.canadacentral-01.azurewebsites.net/api/monitoring';
+  private apiUrl = 'http://localhost:5000/api/monitoring';
 
   constructor(private http: HttpClient) {}
 
@@ -109,6 +109,9 @@ export class MonitoringService {
    */
   createMonitoringRecord(record: CreateMonitoringDto): Observable<MonitoringRecord> {
     console.log('📤 Guardando registro de monitoreo:', record);
+    console.log('📤 URL completa:', this.apiUrl);
+    console.log('📤 Headers:', this.getHeaders());
+    
     return this.http.post<MonitoringRecordResponse>(
       this.apiUrl,
       record,
@@ -137,6 +140,10 @@ export class MonitoringService {
    * Obtiene todos los registros de monitoreo de una sesión específica
    */
   getMonitoringRecordsBySession(sessionId: string): Observable<MonitoringRecord[]> {
+    console.log('🔄 Solicitando registros de monitoreo para sesión:', sessionId);
+    console.log('🔄 URL completa:', `${this.apiUrl}/session/${sessionId}`);
+    console.log('🔄 Headers:', this.getHeaders());
+    
     return this.http.get<MonitoringRecordResponse[]>(
       `${this.apiUrl}/session/${sessionId}`,
       { headers: this.getHeaders() }

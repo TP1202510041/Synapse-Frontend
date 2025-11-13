@@ -47,6 +47,8 @@ export class AddPatientButtonComponent {
           imageUrl: pokemonData.sprites.front_default || ''
         };
 
+        console.log('Enviando datos del paciente:', newPatient);
+        
         this.patientService.createPatient(newPatient).subscribe({
           next: (createdPatient) => {
             console.log('Paciente creado exitosamente:', createdPatient);
@@ -55,8 +57,23 @@ export class AddPatientButtonComponent {
             this.resetForm();
           },
           error: (err) => {
-            console.error('Error al crear el paciente:', err);
-            alert('Error al crear el paciente');
+            console.error('Error completo al crear el paciente:', err);
+            console.error('Status:', err.status);
+            console.error('Message:', err.message);
+            console.error('Error body:', err.error);
+            
+            let errorMessage = 'Error al crear el paciente';
+            if (err.status === 401) {
+              errorMessage = 'Error de autenticación. Por favor inicia sesión nuevamente.';
+            } else if (err.status === 403) {
+              errorMessage = 'No tienes permisos para crear pacientes.';
+            } else if (err.status === 400) {
+              errorMessage = 'Datos inválidos. Verifica la información del paciente.';
+            } else if (err.status === 0) {
+              errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté corriendo.';
+            }
+            
+            alert(errorMessage);
           }
         });
       },

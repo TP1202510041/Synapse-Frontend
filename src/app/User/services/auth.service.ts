@@ -131,10 +131,9 @@ export class AuthService {
     return this.http.post<ApiResponse>(`${this.apiUrl}/forgot-password`, request);
   }
 
-  // Restablecer contraseña
-  resetPassword(token: string, newPassword: string): Observable<ApiResponse> {
-    const request: ResetPasswordRequest = { token, newPassword };
-    return this.http.post<ApiResponse>(`${this.apiUrl}/reset-password`, request);
+  // Restablecer contraseña con código de verificación
+  resetPasswordWithEmail(data: { email: string; verificationCode: string; newPassword: string; confirmPassword: string }): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/reset-password`, data);
   }
 
   // Verificar si un email existe (endpoint existente)

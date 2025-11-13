@@ -601,7 +601,22 @@ export class MonitoringRecordsViewComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('❌ Error cargando registros de monitoreo:', error);
-        this.error = 'Error al cargar los registros de monitoreo';
+        console.error('Status:', error.status);
+        console.error('Message:', error.message);
+        console.error('Error body:', error.error);
+        
+        let errorMessage = 'Error al cargar los registros de monitoreo';
+        if (error.status === 401) {
+          errorMessage = 'Error de autenticación. Por favor inicia sesión nuevamente.';
+        } else if (error.status === 403) {
+          errorMessage = 'No tienes permisos para ver los registros de monitoreo.';
+        } else if (error.status === 404) {
+          errorMessage = 'No se encontraron registros de monitoreo para esta sesión.';
+        } else if (error.status === 0) {
+          errorMessage = 'No se puede conectar al servidor. Verifica que el backend esté corriendo.';
+        }
+        
+        this.error = errorMessage;
         this.monitoringRecords = [];
         this.isLoading = false;
       }
