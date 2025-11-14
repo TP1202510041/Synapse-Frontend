@@ -80,7 +80,7 @@ import { TestDataManagerComponent } from '../test-data-manager/test-data-manager
           <h3>ℹ️ Información del Sistema</h3>
           <div class="info-grid">
             <div class="info-item">
-              <strong>Backend URL:</strong> http://localhost:5000
+              <strong>Backend URL:</strong> Azure Container Apps
             </div>
             <div class="info-item">
               <strong>Nuevos Servicios:</strong> 5 servicios creados

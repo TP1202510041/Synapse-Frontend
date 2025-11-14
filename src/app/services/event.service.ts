@@ -34,7 +34,7 @@ export interface UpdateEventRequest {
   providedIn: 'root'
 })
 export class EventService {
-  private apiUrl = 'http://localhost:5000/api/events';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/events';
 
   constructor(private http: HttpClient) { }
 
@@ -133,7 +133,7 @@ export class EventService {
   createTestEvents(): Observable<any> {
     console.log('🔄 Creando eventos de prueba');
     return this.http.post<any>(
-      'http://localhost:5000/api/test-data/create-sample-events',
+      'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/test-data/create-sample-events',
       {},
       { headers: this.getHeaders() }
     );

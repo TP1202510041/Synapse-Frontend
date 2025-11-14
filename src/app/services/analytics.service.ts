@@ -98,7 +98,7 @@ export interface PerformanceComparison {
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = 'http://localhost:5000/api/analytics';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/analytics';
 
   constructor(private http: HttpClient) {}
 

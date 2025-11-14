@@ -7,7 +7,7 @@ import { VrSession, CreateVrSessionDto, VrSessionFilters } from '../models/vr-se
   providedIn: 'root'
 })
 export class VrSessionService {
-  private apiUrl = 'http://localhost:5000/api/sessions/vr';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/sessions/vr';
 
   constructor(private http: HttpClient) {}
 

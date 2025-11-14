@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class TestDataService {
-  private apiUrl = 'http://localhost:5000/api/test-data';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/test-data';
 
   constructor(private http: HttpClient) {}
 

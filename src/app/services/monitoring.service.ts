@@ -66,7 +66,7 @@ export interface CreateMonitoringDto {
   providedIn: 'root'
 })
 export class MonitoringService {
-  private apiUrl = 'http://localhost:5000/api/monitoring';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/monitoring';
 
   constructor(private http: HttpClient) {}
 

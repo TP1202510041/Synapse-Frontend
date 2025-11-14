@@ -29,7 +29,7 @@ export class QuickCheck {
     };
   }
   
-  static async checkBackend(baseUrl: string = 'http://localhost:5000'): Promise<{status: string, message: string}> {
+  static async checkBackend(baseUrl: string = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io'): Promise<{status: string, message: string}> {
     try {
       const response = await fetch(`${baseUrl}/api/auth/test`, {
         method: 'GET',

@@ -13,7 +13,7 @@ import {
   providedIn: 'root'
 })
 export class ClinicalObservationService {
-  private apiUrl = 'http://localhost:5000/api/observations';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/observations';
 
   constructor(private http: HttpClient) { }
 

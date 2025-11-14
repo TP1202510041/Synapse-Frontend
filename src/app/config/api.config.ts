@@ -1,7 +1,7 @@
 // Configuración centralizada de la API
 export const API_CONFIG = {
   // URL base del backend
-  BASE_URL: 'http://localhost:5000',
+  BASE_URL: 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io',
   
   // Endpoints principales
   ENDPOINTS: {

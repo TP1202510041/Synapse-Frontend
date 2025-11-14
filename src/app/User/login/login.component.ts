@@ -84,7 +84,7 @@ export class LoginComponent {
               this.error = 'Datos inválidos. Por favor verifica tu email y contraseña.';
             }
           } else if (err.status === 0) {
-            this.error = 'No se puede conectar al servidor. Verifica que el backend esté corriendo en http://localhost:5000';
+            this.error = 'No se puede conectar al servidor. Verifica tu conexión a internet.';
           } else {
             this.error = err.error?.message || 'Error al iniciar sesión. Por favor intenta nuevamente.';
           }

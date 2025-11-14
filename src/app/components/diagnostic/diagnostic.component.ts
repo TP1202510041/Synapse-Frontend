@@ -144,7 +144,7 @@ import { QuickCheck } from '../../utils/quick-check';
   `]
 })
 export class DiagnosticComponent implements OnInit {
-  backendUrl = 'http://localhost:5000';
+  backendUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io';
   currentTime = new Date().toLocaleString();
   testing = false;
   testResult: {success: boolean, message: string} | null = null;

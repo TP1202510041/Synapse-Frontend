@@ -164,7 +164,7 @@ export class RegisterComponent {
             this.error = err.error?.message || 'El email o DNI ya está registrado';
           } else if (err.status === 0) {
             // Error de conexión
-            this.error = 'No se puede conectar al servidor. Verifica que el backend esté corriendo en http://localhost:5000';
+            this.error = 'No se puede conectar al servidor. Verifica tu conexión a internet.';
           } else if (err.status === 401 || err.status === 403) {
             // Error de autenticación - probablemente token inválido
             const message = err.error?.message || err.error || '';

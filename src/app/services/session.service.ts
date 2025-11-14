@@ -9,7 +9,7 @@ import { MonitoringService } from './monitoring.service';
   providedIn: 'root'
 })
 export class SessionService {
-  private apiUrl = 'http://localhost:5000/api/sessions';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/sessions';
 
   constructor(
     private http: HttpClient,

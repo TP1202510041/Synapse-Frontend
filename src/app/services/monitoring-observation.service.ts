@@ -53,7 +53,7 @@ export interface PaginatedMonitoringObservations {
   providedIn: 'root'
 })
 export class MonitoringObservationService {
-  private apiUrl = 'http://localhost:5000/api/monitoring-observations';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/monitoring-observations';
 
   constructor(private http: HttpClient) {}
 
@@ -168,7 +168,7 @@ export class MonitoringObservationService {
   createTestData(): Observable<MonitoringObservationResponse> {
     console.log('🔄 Creando datos de prueba de observaciones de monitoreo');
     return this.http.post<MonitoringObservationResponse>(
-      'http://localhost:5000/api/test-data/create-monitoring-observations',
+      'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/test-data/create-monitoring-observations',
       {},
       { headers: this.getHeaders() }
     );

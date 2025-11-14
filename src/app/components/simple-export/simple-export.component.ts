@@ -425,7 +425,7 @@ export class SimpleExportComponent {
     console.log('📄 Generando PDF real:', exportRequest);
 
     // Llamar al backend real
-    fetch(`http://localhost:5000/api/exports/patient/${this.patientId}/pdf`, {
+    fetch(`https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/exports/patient/${this.patientId}/pdf`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -484,7 +484,7 @@ export class SimpleExportComponent {
     }
 
     // Descargar PDF real del backend
-    const downloadUrl = `http://localhost:5000/api/exports/${this.currentExportId}/download`;
+    const downloadUrl = `https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/exports/${this.currentExportId}/download`;
     console.log('📥 Descargando PDF desde:', downloadUrl);
 
     // Abrir en nueva ventana para descargar

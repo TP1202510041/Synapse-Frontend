@@ -7,7 +7,7 @@ import { ExportRequest, ExportResponse } from '../models/export.model';
   providedIn: 'root'
 })
 export class ExportService {
-  private apiUrl = 'http://localhost:5000/api/exports';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/exports';
 
   constructor(private http: HttpClient) {}
 

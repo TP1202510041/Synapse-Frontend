@@ -1,7 +1,7 @@
 // Configuración de entorno simple
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:5000'
+  apiUrl: 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io'
 };
 
 // URLs de API
