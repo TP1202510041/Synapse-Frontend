@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./User/register/register.component').then(c => c.RegisterComponent)
   },
   {
+    path: 'forgot-password',
+    loadComponent: () => import('./User/forgot-password/forgot-password.component').then(c => c.ForgotPasswordComponent)
+  },
+  {
     path: 'inicio',
     canActivate: [AuthGuard],
     loadComponent: () => import('./pages/inicio/inicio.component').then(m => m.InicioComponent)
@@ -44,6 +48,15 @@ export const routes: Routes = [
     path: 'session/:id/analytics',
     canActivate: [AuthGuard],
     loadComponent: () => import('./pages/analytics/analytics.component').then(m => m.AnalyticsComponent)
+  },
+  {
+    path: 'test-features',
+    canActivate: [AuthGuard],
+    loadComponent: () => import('./components/test-new-features/test-new-features-simple.component').then(m => m.TestNewFeaturesSimpleComponent)
+  },
+  {
+    path: 'diagnostic',
+    loadComponent: () => import('./components/diagnostic/diagnostic.component').then(m => m.DiagnosticComponent)
   },
   {
     path: '',

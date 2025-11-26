@@ -3,41 +3,22 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
-export interface User {
-  id?: number;
-  email: string;
-  userName: string;
-  role?: string;
-}
-
-interface LoginResponse {
-  success: boolean;
-  message: string;
-  data: {
-    token: string;
-    email: string;
-    userName: string;
-    role: string;
-  };
-}
-
-interface LoginData {
-  email: string;
-  password: string;
-}
-
-interface RegisterData {
-  email: string;
-  userName: string;
-  password: string;
-}
+import { 
+  User, 
+  LoginResponse, 
+  LoginData, 
+  RegisterData, 
+  ForgotPasswordRequest, 
+  ResetPasswordRequest, 
+  LoginAttempt,
+  ApiResponse 
+} from '../../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:5000/api/auth';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/auth';
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser: Observable<User | null>;
 
@@ -81,14 +62,17 @@ export class AuthService {
         map(response => {
           // Construir el objeto User desde response.data
           const user: User = {
+            id: response.data.userId, // ← AGREGAR userId del backend
             email: response.data.email,
             userName: response.data.userName,
             role: response.data.role
           };
 
           localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('userId', response.data.userId?.toString() || ''); // ← GUARDAR userId separado
           this.currentUserSubject.next(user);
           console.log('✅ Usuario guardado:', user);
+          console.log('✅ UserId guardado:', response.data.userId);
 
           return user;
         })
@@ -113,8 +97,20 @@ export class AuthService {
   }
 
   getCurrentUserId(): string {
+    // Primero intentar obtener del localStorage
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      return storedUserId;
+    }
+    
+    // Fallback al usuario actual
     const user = this.currentUserValue;
     return user?.id?.toString() || '';
+  }
+
+  getCurrentUserIdAsNumber(): number {
+    const userId = this.getCurrentUserId();
+    return userId ? parseInt(userId, 10) : 0;
   }
 
   updateUserProfile(user: User): Observable<User> {
@@ -125,5 +121,39 @@ export class AuthService {
         return updatedUser;
       })
     );
+  }
+
+  // NUEVOS MÉTODOS AGREGADOS
+
+  // Solicitar recuperación de contraseña
+  forgotPassword(email: string): Observable<ApiResponse> {
+    const request: ForgotPasswordRequest = { email };
+    return this.http.post<ApiResponse>(`${this.apiUrl}/forgot-password`, request);
+  }
+
+  // Restablecer contraseña con código de verificación
+  resetPasswordWithEmail(data: { email: string; verificationCode: string; newPassword: string; confirmPassword: string }): Observable<ApiResponse> {
+    return this.http.post<ApiResponse>(`${this.apiUrl}/reset-password`, data);
+  }
+
+  // Verificar si un email existe (endpoint existente)
+  checkEmailExists(email: string): Observable<ApiResponse<boolean>> {
+    return this.http.get<ApiResponse<boolean>>(`${this.apiUrl}/check-email?email=${email}`);
+  }
+
+  // Obtener intentos de login (solo admin)
+  getLoginAttempts(userId: number): Observable<LoginAttempt[]> {
+    const token = localStorage.getItem('token');
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
+    
+    return this.http.get<LoginAttempt[]>(`${this.apiUrl}/login-attempts/${userId}`, { headers });
+  }
+
+  // Test endpoint (existente)
+  testApi(): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}/test`);
   }
 }

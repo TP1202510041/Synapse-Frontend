@@ -1,6 +1,6 @@
 <div class="inicio-wrapper">
   <div class="inicio-container">
-    <h1>Bienvenido a <span>PhobiaShift VR</span></h1>
+    <h1>Bienvenido a <span>Synapse VR</span></h1>
     <p class="intro-text">Explora las herramientas para acompañar a tus pacientes.</p>
 
     <div class="feature-boxes">
@@ -16,6 +16,34 @@
         <h3>⚙️ Configuración</h3>
         <p>Personaliza tu perfil, la app y tus preferencias.</p>
       </a>
+    </div>
+
+    <!-- ESTADÍSTICAS DEL USUARIO -->
+    <div class="quick-stats">
+      <h2>📊 Tu Resumen</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">👤</div>
+          <div class="stat-info">
+            <div class="stat-label">Usuario Activo</div>
+            <div class="stat-value">{{ userName }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <div class="stat-label">Tus Pacientes</div>
+            <div class="stat-number">{{ totalPatients }}</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-info">
+            <div class="stat-label">Sesiones Totales</div>
+            <div class="stat-number">{{ totalSessions }}</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

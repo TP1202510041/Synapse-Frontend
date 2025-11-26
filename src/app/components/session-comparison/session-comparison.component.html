@@ -1,0 +1,219 @@
+<div class="comparison-container">
+  <div class="comparison-header">
+    <h3>📊 Comparar Sesiones</h3>
+    <p>Selecciona dos sesiones para comparar sus métricas</p>
+  </div>
+
+  <!-- Session Selectors -->
+  <div class="session-selectors">
+    <!-- Session 1 Selector -->
+    <div class="session-selector">
+      <h4>Sesión 1</h4>
+      <select 
+        (change)="$any($event.target).value && selectSession1(sessions[+$any($event.target).value])"
+        [disabled]="sessions.length === 0"
+        class="session-select"
+      >
+        <option value="">Seleccionar sesión...</option>
+        <option *ngFor="let session of sessions; let i = index" [value]="i">
+          {{session.sessionDate}} - {{session.description}}
+        </option>
+      </select>
+      
+      <div class="selected-session" *ngIf="selectedSession1">
+        <div class="session-info">
+          <span class="session-date">📅 {{selectedSession1.session.sessionDate}}</span>
+          <span class="session-desc">{{selectedSession1.session.description}}</span>
+        </div>
+        <button (click)="clearSelection(1)" class="clear-btn" title="Limpiar selección">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="loading" *ngIf="selectedSession1?.isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Cargando datos...</span>
+      </div>
+    </div>
+
+    <!-- VS Divider -->
+    <div class="vs-divider">
+      <span>VS</span>
+    </div>
+
+    <!-- Session 2 Selector -->
+    <div class="session-selector">
+      <h4>Sesión 2</h4>
+      <select 
+        (change)="$any($event.target).value && selectSession2(sessions[+$any($event.target).value])"
+        [disabled]="sessions.length === 0"
+        class="session-select"
+      >
+        <option value="">Seleccionar sesión...</option>
+        <option *ngFor="let session of sessions; let i = index" [value]="i">
+          {{session.sessionDate}} - {{session.description}}
+        </option>
+      </select>
+      
+      <div class="selected-session" *ngIf="selectedSession2">
+        <div class="session-info">
+          <span class="session-date">📅 {{selectedSession2.session.sessionDate}}</span>
+          <span class="session-desc">{{selectedSession2.session.description}}</span>
+        </div>
+        <button (click)="clearSelection(2)" class="clear-btn" title="Limpiar selección">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="loading" *ngIf="selectedSession2?.isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Cargando datos...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Results -->
+  <div class="comparison-results" *ngIf="showComparison">
+    <div class="results-header">
+      <h4>Resultados de la Comparación</h4>
+      <button (click)="clearAll()" class="btn-clear-all">
+        <i class="fas fa-redo"></i>
+        Nueva comparación
+      </button>
+    </div>
+
+    <!-- Monitoring Data Comparison -->
+    <div class="metrics-grid" *ngIf="selectedSession1!.monitoring && selectedSession2!.monitoring">
+      <!-- Average Heart Rate -->
+      <div class="metric-card">
+        <div class="metric-icon">💓</div>
+        <div class="metric-label">Ritmo Cardíaco Promedio</div>
+        <div class="metric-values">
+          <div class="value-item">
+            <span class="value-label">Sesión 1:</span>
+            <span class="value">{{selectedSession1!.monitoring!.avgHeartRate}} bpm</span>
+          </div>
+          <div class="value-item">
+            <span class="value-label">Sesión 2:</span>
+            <span class="value">{{selectedSession2!.monitoring!.avgHeartRate}} bpm</span>
+          </div>
+        </div>
+        <div class="metric-difference" 
+             [class]="getDifferenceClass(calculateDifference(selectedSession1!.monitoring!.avgHeartRate, selectedSession2!.monitoring!.avgHeartRate))">
+          <i class="fas" [class.fa-arrow-up]="calculateDifference(selectedSession1!.monitoring!.avgHeartRate, selectedSession2!.monitoring!.avgHeartRate) > 0"
+                         [class.fa-arrow-down]="calculateDifference(selectedSession1!.monitoring!.avgHeartRate, selectedSession2!.monitoring!.avgHeartRate) < 0"
+                         [class.fa-minus]="calculateDifference(selectedSession1!.monitoring!.avgHeartRate, selectedSession2!.monitoring!.avgHeartRate) === 0"></i>
+          {{formatDifference(calculateDifference(selectedSession1!.monitoring!.avgHeartRate, selectedSession2!.monitoring!.avgHeartRate))}} bpm
+          <span class="percentage">({{formatPercentage(calculatePercentageChange(selectedSession1!.monitoring!.avgHeartRate, selectedSession2!.monitoring!.avgHeartRate))}})</span>
+        </div>
+      </div>
+
+      <!-- Duration -->
+      <div class="metric-card">
+        <div class="metric-icon">⏱️</div>
+        <div class="metric-label">Duración</div>
+        <div class="metric-values">
+          <div class="value-item">
+            <span class="value-label">Sesión 1:</span>
+            <span class="value">{{selectedSession1!.monitoring!.duration}} min</span>
+          </div>
+          <div class="value-item">
+            <span class="value-label">Sesión 2:</span>
+            <span class="value">{{selectedSession2!.monitoring!.duration}} min</span>
+          </div>
+        </div>
+        <div class="metric-difference" 
+             [class]="getDifferenceClass(calculateDifference(selectedSession1!.monitoring!.duration, selectedSession2!.monitoring!.duration))">
+          <i class="fas" [class.fa-arrow-up]="calculateDifference(selectedSession1!.monitoring!.duration, selectedSession2!.monitoring!.duration) > 0"
+                         [class.fa-arrow-down]="calculateDifference(selectedSession1!.monitoring!.duration, selectedSession2!.monitoring!.duration) < 0"
+                         [class.fa-minus]="calculateDifference(selectedSession1!.monitoring!.duration, selectedSession2!.monitoring!.duration) === 0"></i>
+          {{formatDifference(calculateDifference(selectedSession1!.monitoring!.duration, selectedSession2!.monitoring!.duration))}} min
+          <span class="percentage">({{formatPercentage(calculatePercentageChange(selectedSession1!.monitoring!.duration, selectedSession2!.monitoring!.duration))}})</span>
+        </div>
+      </div>
+
+      <!-- Total Records -->
+      <div class="metric-card">
+        <div class="metric-icon">📊</div>
+        <div class="metric-label">Total de Registros</div>
+        <div class="metric-values">
+          <div class="value-item">
+            <span class="value-label">Sesión 1:</span>
+            <span class="value">{{selectedSession1!.monitoring!.totalRecords}}</span>
+          </div>
+          <div class="value-item">
+            <span class="value-label">Sesión 2:</span>
+            <span class="value">{{selectedSession2!.monitoring!.totalRecords}}</span>
+          </div>
+        </div>
+        <div class="metric-difference" 
+             [class]="getDifferenceClass(calculateDifference(selectedSession1!.monitoring!.totalRecords, selectedSession2!.monitoring!.totalRecords))">
+          <i class="fas" [class.fa-arrow-up]="calculateDifference(selectedSession1!.monitoring!.totalRecords, selectedSession2!.monitoring!.totalRecords) > 0"
+                         [class.fa-arrow-down]="calculateDifference(selectedSession1!.monitoring!.totalRecords, selectedSession2!.monitoring!.totalRecords) < 0"
+                         [class.fa-minus]="calculateDifference(selectedSession1!.monitoring!.totalRecords, selectedSession2!.monitoring!.totalRecords) === 0"></i>
+          {{formatDifference(calculateDifference(selectedSession1!.monitoring!.totalRecords, selectedSession2!.monitoring!.totalRecords))}}
+          <span class="percentage">({{formatPercentage(calculatePercentageChange(selectedSession1!.monitoring!.totalRecords, selectedSession2!.monitoring!.totalRecords))}})</span>
+        </div>
+      </div>
+
+      <!-- Min Heart Rate -->
+      <div class="metric-card">
+        <div class="metric-icon">📉</div>
+        <div class="metric-label">Ritmo Cardíaco Mínimo</div>
+        <div class="metric-values">
+          <div class="value-item">
+            <span class="value-label">Sesión 1:</span>
+            <span class="value">{{selectedSession1!.monitoring!.minHeartRate}} bpm</span>
+          </div>
+          <div class="value-item">
+            <span class="value-label">Sesión 2:</span>
+            <span class="value">{{selectedSession2!.monitoring!.minHeartRate}} bpm</span>
+          </div>
+        </div>
+        <div class="metric-difference" 
+             [class]="getDifferenceClass(calculateDifference(selectedSession1!.monitoring!.minHeartRate, selectedSession2!.monitoring!.minHeartRate))">
+          <i class="fas" [class.fa-arrow-up]="calculateDifference(selectedSession1!.monitoring!.minHeartRate, selectedSession2!.monitoring!.minHeartRate) > 0"
+                         [class.fa-arrow-down]="calculateDifference(selectedSession1!.monitoring!.minHeartRate, selectedSession2!.monitoring!.minHeartRate) < 0"
+                         [class.fa-minus]="calculateDifference(selectedSession1!.monitoring!.minHeartRate, selectedSession2!.monitoring!.minHeartRate) === 0"></i>
+          {{formatDifference(calculateDifference(selectedSession1!.monitoring!.minHeartRate, selectedSession2!.monitoring!.minHeartRate))}} bpm
+        </div>
+      </div>
+
+      <!-- Max Heart Rate -->
+      <div class="metric-card">
+        <div class="metric-icon">📈</div>
+        <div class="metric-label">Ritmo Cardíaco Máximo</div>
+        <div class="metric-values">
+          <div class="value-item">
+            <span class="value-label">Sesión 1:</span>
+            <span class="value">{{selectedSession1!.monitoring!.maxHeartRate}} bpm</span>
+          </div>
+          <div class="value-item">
+            <span class="value-label">Sesión 2:</span>
+            <span class="value">{{selectedSession2!.monitoring!.maxHeartRate}} bpm</span>
+          </div>
+        </div>
+        <div class="metric-difference" 
+             [class]="getDifferenceClass(calculateDifference(selectedSession1!.monitoring!.maxHeartRate, selectedSession2!.monitoring!.maxHeartRate))">
+          <i class="fas" [class.fa-arrow-up]="calculateDifference(selectedSession1!.monitoring!.maxHeartRate, selectedSession2!.monitoring!.maxHeartRate) > 0"
+                         [class.fa-arrow-down]="calculateDifference(selectedSession1!.monitoring!.maxHeartRate, selectedSession2!.monitoring!.maxHeartRate) < 0"
+                         [class.fa-minus]="calculateDifference(selectedSession1!.monitoring!.maxHeartRate, selectedSession2!.monitoring!.maxHeartRate) === 0"></i>
+          {{formatDifference(calculateDifference(selectedSession1!.monitoring!.maxHeartRate, selectedSession2!.monitoring!.maxHeartRate))}} bpm
+        </div>
+      </div>
+    </div>
+
+    <!-- No monitoring data message -->
+    <div class="no-data-message" *ngIf="!selectedSession1!.monitoring || !selectedSession2!.monitoring">
+      <i class="fas fa-info-circle"></i>
+      <p>Una o ambas sesiones no tienen datos de monitoreo disponibles para comparar.</p>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="empty-state" *ngIf="!selectedSession1 && !selectedSession2">
+    <i class="fas fa-chart-line"></i>
+    <h4>Comienza a comparar</h4>
+    <p>Selecciona dos sesiones arriba para ver una comparación detallada de sus métricas</p>
+  </div>
+</div>

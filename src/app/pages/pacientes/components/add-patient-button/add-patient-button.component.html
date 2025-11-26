@@ -2,22 +2,35 @@
   ➕ Agregar Paciente
 </button>
 
-<div class="modal-backdrop" *ngIf="showForm">
-  <div class="modal">
+<div class="modal-backdrop" *ngIf="showForm" (click)="toggleForm()">
+  <div class="modal" (click)="$event.stopPropagation()">
     <h3>Nuevo paciente</h3>
     <form (ngSubmit)="submitForm()">
-      <input type="text" [(ngModel)]="name" name="name" placeholder="Nombre" required />
-      <input type="number" [(ngModel)]="age" name="age" placeholder="Edad" required min="1" />
+      <div class="form-group">
+        <input type="text" [(ngModel)]="name" name="name" placeholder="Nombre completo" required />
+      </div>
+      
+      <div class="form-group">
+        <input type="number" [(ngModel)]="age" name="age" placeholder="Edad" required min="1" max="120" />
+      </div>
 
-      <select [(ngModel)]="gender" name="gender">
-        <option>Femenino</option>
-        <option>Masculino</option>
-        <option>Otro</option>
-      </select>
+      <div class="form-group">
+        <select [(ngModel)]="gender" name="gender" required>
+          <option value="" disabled selected>Seleccionar género</option>
+          <option value="Femenino">Femenino</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
 
-
-      <button type="submit" class="add-button" style="margin-top: 12px;">Guardar</button>
+      <div class="button-group">
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <button type="button" class="close-btn" (click)="toggleForm()">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+      </div>
     </form>
-    <button class="close-btn" (click)="toggleForm()">Cancelar</button>
   </div>
 </div>

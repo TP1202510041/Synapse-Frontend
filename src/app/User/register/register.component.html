@@ -1,5 +1,5 @@
 <div class="login-container">
-  <div class="login-box">
+  <div class="login-box register-box">
     <h2>Crear cuenta</h2>
     <p class="subtitle">Únete a nuestra comunidad</p>
 
@@ -8,51 +8,216 @@
       {{error}}
     </div>
 
+    <div class="warning-message" *ngIf="validationErrors.length > 0">
+      <i class="fas fa-shield-alt"></i>
+      <div>
+        <strong>Requisitos de contraseña:</strong>
+        <ul>
+          <li *ngFor="let err of validationErrors">{{err}}</li>
+        </ul>
+      </div>
+    </div>
+
     <form (ngSubmit)="onRegister()">
+      <!-- Nombre completo -->
       <div class="form-group">
         <label for="reg-name">
-          <i class="fas fa-user"></i> Nombre completo
+          <i class="fas fa-user"></i> Nombre completo *
         </label>
         <input
           type="text"
           id="reg-name"
           [(ngModel)]="registerData.userName"
-          name="name"
+          name="userName"
           required
-          placeholder="Ingresa tu nombre"
+          placeholder="Dr. Juan Pérez"
         >
       </div>
 
+      <!-- Email y Rol en fila -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reg-email">
+            <i class="fas fa-envelope"></i> Correo electrónico *
+          </label>
+          <input
+            type="email"
+            id="reg-email"
+            [(ngModel)]="registerData.email"
+            name="email"
+            required
+            placeholder="ejemplo&#64;correo.com"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="reg-role">
+            <i class="fas fa-user-tag"></i> Rol *
+          </label>
+          <select
+            id="reg-role"
+            [(ngModel)]="registerData.role"
+            name="role"
+            required
+          >
+            <option value="USER">Usuario</option>
+            <option value="THERAPIST">Terapeuta</option>
+            <option value="ADMIN">Administrador</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Contraseñas en fila -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reg-password">
+            <i class="fas fa-lock"></i> Contraseña *
+          </label>
+          <div class="password-input">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="reg-password"
+              [(ngModel)]="registerData.password"
+              name="password"
+              required
+              (input)="validatePassword()"
+              placeholder="Mínimo 8 caracteres"
+            >
+            <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
+              <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+          <div class="password-strength" *ngIf="registerData.password">
+            <div class="strength-bar" [attr.data-strength]="passwordStrength"></div>
+            <span class="strength-text">{{passwordStrength}}</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-confirm-password">
+            <i class="fas fa-lock"></i> Confirmar contraseña *
+          </label>
+          <div class="password-input">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="reg-confirm-password"
+              [(ngModel)]="registerData.confirmPassword"
+              name="confirmPassword"
+              required
+              placeholder="Repite tu contraseña"
+            >
+            <button type="button" class="toggle-password" (click)="toggleConfirmPasswordVisibility()">
+              <i [class]="showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="form-divider">
+        <span>Información adicional (opcional)</span>
+      </div>
+
+      <!-- DNI y Teléfono en fila -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reg-dni">
+            <i class="fas fa-id-card"></i> DNI
+          </label>
+          <input
+            type="text"
+            id="reg-dni"
+            [(ngModel)]="registerData.dni"
+            name="dni"
+            pattern="[0-9]{8,12}"
+            placeholder="12345678"
+            maxlength="12"
+          >
+          <small>8-12 dígitos</small>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-phone">
+            <i class="fas fa-phone"></i> Teléfono
+          </label>
+          <input
+            type="tel"
+            id="reg-phone"
+            [(ngModel)]="registerData.phoneNumber"
+            name="phoneNumber"
+            placeholder="+51987654321"
+          >
+          <small>Formato: +51987654321</small>
+        </div>
+      </div>
+
+      <!-- Fecha de nacimiento y Género en fila -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="reg-birthdate">
+            <i class="fas fa-calendar"></i> Fecha de nacimiento
+          </label>
+          <input
+            type="date"
+            id="reg-birthdate"
+            [(ngModel)]="registerData.birthDate"
+            name="birthDate"
+          >
+          <small *ngIf="registerData.birthDate">Edad: {{calculateAge()}} años</small>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-gender">
+            <i class="fas fa-venus-mars"></i> Género
+          </label>
+          <select
+            id="reg-gender"
+            [(ngModel)]="registerData.gender"
+            name="gender"
+          >
+            <option value="MASCULINO">Masculino</option>
+            <option value="FEMENINO">Femenino</option>
+            <option value="OTRO">Otro</option>
+            <option value="PREFIERO_NO_DECIR">Prefiero no decir</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Dirección -->
       <div class="form-group">
-        <label for="reg-email">
-          <i class="fas fa-envelope"></i> Correo electrónico
+        <label for="reg-address">
+          <i class="fas fa-map-marker-alt"></i> Dirección
         </label>
         <input
-          type="email"
-          id="reg-email"
-          [(ngModel)]="registerData.email"
-          name="email"
-          required
-          placeholder="ejemplo@correo.com"
+          type="text"
+          id="reg-address"
+          [(ngModel)]="registerData.address"
+          name="address"
+          placeholder="Av. Principal 123, Lima, Perú"
+          maxlength="500"
         >
       </div>
 
+      <!-- Especialización -->
       <div class="form-group">
-        <label for="reg-password">
-          <i class="fas fa-lock"></i> Contraseña
+        <label for="reg-specialization">
+          <i class="fas fa-graduation-cap"></i> Especialización
         </label>
-        <div class="password-input">
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="reg-password"
-            [(ngModel)]="registerData.password"
-            name="password"
-            required
-            placeholder="Crea una contraseña"
-          >
-          <button type="button" class="toggle-password" (click)="togglePasswordVisibility()">
-            <i [class]="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-          </button>
+        <input
+          type="text"
+          id="reg-specialization"
+          [(ngModel)]="registerData.specialization"
+          name="specialization"
+          placeholder="Psicología Clínica"
+        >
+      </div>
+
+      <!-- Info de requisitos -->
+      <div class="info-box">
+        <i class="fas fa-info-circle"></i>
+        <div>
+          <strong>Requisitos de contraseña:</strong>
+          <span>Mínimo 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 carácter especial (&#64;$!%*?&)</span>
         </div>
       </div>
 

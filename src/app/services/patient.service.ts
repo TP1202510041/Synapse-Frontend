@@ -7,7 +7,7 @@ import { Patient, CreatePatientDto, UpdatePatientDto } from '../models/patient.m
   providedIn: 'root'
 })
 export class PatientService {
-  private apiUrl = 'http://localhost:5000/api/patients';
+  private apiUrl = 'https://synapse-backend--0000001.wonderfulforest-e77213bb.brazilsouth.azurecontainerapps.io/api/patients';
 
   constructor(private http: HttpClient) {}
 
@@ -29,6 +29,10 @@ export class PatientService {
   }
 
   createPatient(patient: CreatePatientDto): Observable<Patient> {
+    console.log('PatientService: Creando paciente con URL:', this.apiUrl);
+    console.log('PatientService: Datos del paciente:', patient);
+    console.log('PatientService: Headers:', this.getHeaders());
+    
     return this.http.post<Patient>(this.apiUrl, patient, { headers: this.getHeaders() });
   }
 
